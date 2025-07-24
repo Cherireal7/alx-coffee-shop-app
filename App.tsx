@@ -47,7 +47,7 @@ function OnboardingScreen({ navigation }: any) {
 function HomeScreen() {
   return (
     <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
-      <Text style={{ fontSize: 24, fontWeight: "bold" }}>Welcome to Coffee Shop!</Text>
+      <Text style={{ fontSize: 24, fontWeight: "bold" }}>Welcome to Coffee Shop Cheri!</Text>
     </View>
   );
 }
