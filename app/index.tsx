@@ -1,42 +1,43 @@
-// app/index.tsx
+import React from "react";
+import { View, Text, TouchableOpacity, ImageBackground } from "react-native";
+import { useSafeAreaInsets, SafeAreaProvider } from "react-native-safe-area-context";
 import { StatusBar } from "expo-status-bar";
-import { Text, View, TouchableOpacity, Image } from "react-native";
 import { useRouter } from "expo-router";
 
 export default function Onboarding() {
+  const insets = useSafeAreaInsets();
   const router = useRouter();
 
   return (
-    <View style={{ flex: 1, backgroundColor: "#000" }}>
-      <Image
-        source={require("../assets/images/coffee-hero.png")} // Add image in assets/images
-        style={{ flex: 1, width: "100%", height: "100%" }}
-        resizeMode="cover"
-      />
-
-      <View style={{ position: "absolute", bottom: 60, width: "100%", alignItems: "center" }}>
-        <Text style={{ fontSize: 28, fontWeight: "bold", color: "#fff", textAlign: "center" }}>
-          Coffee in Blissful Delight!
-        </Text>
-        <Text style={{ fontSize: 16, color: "#ccc", textAlign: "center", marginTop: 10, paddingHorizontal: 30 }}>
-          Welcome to our cozy coffee corner, where every cup is crafted to delight.
-        </Text>
-
-        <TouchableOpacity
-          onPress={() => router.push("/home")}
-          style={{
-            backgroundColor: "#C67C4E",
-            paddingVertical: 12,
-            paddingHorizontal: 40,
-            borderRadius: 25,
-            marginTop: 20,
-          }}
+    <SafeAreaProvider>
+      <View style={{
+        flex: 1,
+        paddingTop: insets.top,
+        paddingBottom: insets.bottom,
+        backgroundColor: "#fff"
+      }}>
+        <ImageBackground
+          source={require("../assets/images/coffee-hero.png")}
+          style={{ flex: 1 }}
+          resizeMode="cover"
         >
-          <Text style={{ color: "#fff", fontSize: 18, fontWeight: "bold" }}>Get Started</Text>
-        </TouchableOpacity>
+          <View style={{ flex: 1, justifyContent: "flex-end", backgroundColor: "rgba(0,0,0,0.5)", padding: 24 }}>
+            <Text style={{ color: "#fff", fontSize: 28, fontWeight: "bold", textAlign: "center", marginBottom: 12 }}>
+              Coffee in Blissful Delight!
+            </Text>
+            <Text style={{ color: "#ddd", fontSize: 16, textAlign: "center", marginBottom: 20 }}>
+              Welcome to our cozy coffee corner, where every cup is a delightful experience for you.
+            </Text>
+            <TouchableOpacity
+              style={{ backgroundColor: "#C67C4E", paddingVertical: 14, borderRadius: 30, alignItems: "center" }}
+              onPress={() => router.replace("/(tabs)/home")}
+            >
+              <Text style={{ color: "#fff", fontSize: 18, fontWeight: "600" }}>Get Started</Text>
+            </TouchableOpacity>
+          </View>
+        </ImageBackground>
+        <StatusBar style="light" />
       </View>
-
-      <StatusBar style="light" />
-    </View>
+    </SafeAreaProvider>
   );
 }
