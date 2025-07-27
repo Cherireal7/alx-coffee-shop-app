@@ -21,6 +21,7 @@ export default function HomeScreen() {
 
   return (
     <SafeAreaProvider>
+      <ScrollView>
       <View
         style={[
           styles.container,
@@ -112,6 +113,7 @@ export default function HomeScreen() {
           </View>
         </ScrollView>
       </View>
+      </ScrollView>
     </SafeAreaProvider>
   );
 }
