@@ -8,111 +8,114 @@ import {
   ScrollView,
   TouchableOpacity,
 } from "react-native";
-import { SafeAreaProvider, useSafeAreaInsets } from "react-native-safe-area-context";
+import { StatusBar } from "expo-status-bar";
 import { Ionicons } from "@expo/vector-icons";
+import { SafeAreaProvider } from "react-native-safe-area-context";
 import { coffeeItems } from "../../constants/data";
 import { imageMap } from "../../constants/imageMap";
 import { useRouter } from "expo-router";
 
 export default function HomeScreen() {
-  const insets = useSafeAreaInsets();
   const [activeCategory, setActiveCategory] = useState("All Coffee");
   const router = useRouter();
 
   return (
     <SafeAreaProvider>
+      {/* Transparent Status Bar */}
+      <StatusBar translucent backgroundColor="transparent" style="light" />
+
       <ScrollView>
-      <View
-        style={[
-          styles.container,
-          { paddingTop: insets.top, paddingBottom: insets.bottom },
-        ]}
-      >
-        {/* Header */}
-        <View style={styles.header}>
-          <Text style={styles.locationLabel}>Location</Text>
-          <Text style={styles.locationValue}>Bilzen, Tanjungbalai</Text>
-        </View>
-
-        {/* Search bar */}
-        <View style={styles.searchContainerParent}>
-          <View style={styles.searchContainer}>
-            <Ionicons name="search" size={20} color="#FFFFFF" style={styles.searchIcon} />
-            <TextInput
-              placeholder="Search for coffee..."
-              placeholderTextColor="#FFFFFF"
-              style={styles.searchInput}
-            />
+        <View style={styles.container}>
+          {/* Header */}
+          <View style={styles.header}>
+            <Text style={styles.locationLabel}>Location</Text>
+            <Text style={styles.locationValue}>Bishoftu, Oromia</Text>
           </View>
-        </View>
 
-        {/* Banner */}
-        {/* <Image
-          style={styles.banner}
-          source={require("../../assets/images/coffeebanner.png")}
-        /> */}
+          {/* Search bar (overlay) */}
+          <View style={styles.searchContainerParent}>
+            <View style={styles.searchContainer}>
+              <Ionicons
+                name="search"
+                size={20}
+                color="#FFFFFF"
+                style={styles.searchIcon}
+              />
+              <TextInput
+                placeholder="Search for coffee..."
+                placeholderTextColor="#FFFFFF"
+                style={styles.searchInput}
+              />
+            </View>
+          </View>
 
-        {/* Categories */}
-        <View style={styles.categoryContainer}>
+          {/* Categories */}
+          <View style={styles.categoryContainer}>
+            <ScrollView
+              horizontal
+              showsHorizontalScrollIndicator={false}
+              contentContainerStyle={styles.categoryScroll}
+            >
+              {["All Coffee", "Latte", "Macchiato", "Cappuccino", "Americano"].map(
+                (item, index) => (
+                  <TouchableOpacity
+                    key={index}
+                    style={[
+                      styles.categoryItem,
+                      activeCategory === item && styles.activeCategoryItem,
+                    ]}
+                    onPress={() => setActiveCategory(item)}
+                  >
+                    <Text
+                      style={[
+                        styles.categoryText,
+                        activeCategory === item && styles.activeCategoryText,
+                      ]}
+                    >
+                      {item}
+                    </Text>
+                  </TouchableOpacity>
+                )
+              )}
+            </ScrollView>
+          </View>
+
+          {/* Product List */}
           <ScrollView
-            horizontal
-            showsHorizontalScrollIndicator={false}
-            contentContainerStyle={styles.categoryScroll}
+            style={styles.productList}
+            showsVerticalScrollIndicator={false}
           >
-            {["All Coffee", "Latte", "Macchiato", "Cappuccino", "Americano"].map(
-              (item, index) => (
+            <View style={styles.cardRow}>
+              {coffeeItems.map((coffee, index) => (
                 <TouchableOpacity
                   key={index}
-                  style={[
-                    styles.categoryItem,
-                    activeCategory === item && styles.activeCategoryItem,
-                  ]}
-                  onPress={() => setActiveCategory(item)}
+                  style={styles.card}
+                  onPress={() =>
+                    router.push({
+                      pathname: "/ProductDetail",
+                      params: {
+                        name: coffee.name,
+                        price: coffee.price,
+                        image: imageMap[coffee.image],
+                      },
+                    })
+                  }
                 >
-                  <Text
-                    style={[
-                      styles.categoryText,
-                      activeCategory === item && styles.activeCategoryText,
-                    ]}
-                  >
-                    {item}
-                  </Text>
+                  {imageMap[coffee.image] ? (
+                    <Image
+                      source={imageMap[coffee.image]}
+                      style={styles.cardImage}
+                    />
+                  ) : (
+                    <Text style={{ color: "red" }}>Image Missing</Text>
+                  )}
+                  <Text style={styles.cardTitle}>{coffee.name}</Text>
+                  <Text style={styles.cardPrice}>{coffee.price}</Text>
                 </TouchableOpacity>
-              )
-            )}
+              ))}
+            </View>
           </ScrollView>
         </View>
-
-        {/* Product List */}
-        <ScrollView style={styles.productList} showsVerticalScrollIndicator={false}>
-          <View style={styles.cardRow}>
-            {coffeeItems.map((coffee, index) => (
-              <TouchableOpacity
-                key={index}
-                style={styles.card}
-                onPress={() =>
-                  router.push({
-                    pathname: "/ProductDetail",
-                    params: {
-                      name: coffee.name,
-                      price: coffee.price,
-                      image: imageMap[coffee.image],
-                    },
-                  })
-                }
-              >
-                {imageMap[coffee.image] ? (
-                  <Image source={imageMap[coffee.image]} style={styles.cardImage} />
-                ) : (
-                  <Text style={{ color: "red" }}>Image Missing</Text>
-                )}
-                <Text style={styles.cardTitle}>{coffee.name}</Text>
-                <Text style={styles.cardPrice}>{coffee.price}</Text>
-              </TouchableOpacity>
-            ))}
-          </View>
-        </ScrollView>
-      </View>
       </ScrollView>
     </SafeAreaProvider>
   );
@@ -122,7 +125,7 @@ const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: "#fff" },
   header: {
     width: "100%",
-    backgroundColor: "#734428",
+    backgroundColor: "#313131",
     borderBottomLeftRadius: 24,
     borderBottomRightRadius: 24,
     paddingHorizontal: 20,
@@ -133,7 +136,7 @@ const styles = StyleSheet.create({
   searchContainerParent: {
     position: "absolute",
     zIndex: 70,
-    top: 170,
+    top: 140, // original position restored
     width: "100%",
     alignItems: "center",
   },
@@ -154,8 +157,7 @@ const styles = StyleSheet.create({
   },
   searchIcon: { marginRight: 8 },
   searchInput: { flex: 1, fontSize: 16, color: "#FFFFFF" },
-  banner: { bottom: 0, padding: 10, width: 360, height:0 },
-  categoryContainer: { marginTop: 10 },
+  categoryContainer: { marginTop: 30 },
   categoryScroll: { paddingHorizontal: 20 },
   categoryItem: {
     paddingVertical: 8,

@@ -7,14 +7,21 @@ import { useRouter } from "expo-router";
 function OnboardingContent() {
   const insets = useSafeAreaInsets();
   const router = useRouter();
+  <StatusBar translucent backgroundColor="transparent" style="light" />
 
   return (
     <SafeAreaView
       style={{
         flex: 1,
-        // paddingTop: insets.top,
-        paddingBottom: insets.bottom,
-        backgroundColor: "#FFFFF",
+       
+            width: "100%",
+            backgroundColor: "#313131",
+            borderBottomLeftRadius: 24,
+            borderBottomRightRadius: 24,
+            // paddingHorizontal: 20,
+            // paddingVertical: 20,
+            height: 160, // Full height for top section
+
       }}
     >
       <ImageBackground
