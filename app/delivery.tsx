@@ -13,7 +13,7 @@ import {
 } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import { SafeAreaView } from "react-native-safe-area-context";
-import MapView, { Marker } from "react-native-maps";
+import MapView, { Marker, Region } from "react-native-maps";
 import * as Location from "expo-location";
 import { useRouter } from "expo-router";
 
@@ -21,10 +21,11 @@ const { height: SCREEN_HEIGHT } = Dimensions.get("window");
 
 export default function DeliveryTracking() {
   const router = useRouter();
-  const [progress, setProgress] = useState(new Animated.Value(0));
-  const [location, setLocation] = useState<{ latitude: number; longitude: number } | null>(null);
-  const [permissionDenied, setPermissionDenied] = useState(false);
   const mapRef = useRef<MapView>(null);
+  const [progress, setProgress] = useState(new Animated.Value(0));
+  const [region, setRegion] = useState<Region | null>(null);
+  const [permissionDenied, setPermissionDenied] = useState(false);
+  const [followUser, setFollowUser] = useState(true);
 
   // Bottom sheet animation
   const translateY = useRef(new Animated.Value(SCREEN_HEIGHT * 0.4)).current;
@@ -73,9 +74,11 @@ export default function DeliveryTracking() {
       }
 
       const currentLocation = await Location.getCurrentPositionAsync({});
-      setLocation({
+      setRegion({
         latitude: currentLocation.coords.latitude,
         longitude: currentLocation.coords.longitude,
+        latitudeDelta: 0.01,
+        longitudeDelta: 0.01,
       });
 
       subscriber = await Location.watchPositionAsync(
@@ -85,10 +88,15 @@ export default function DeliveryTracking() {
           distanceInterval: 1,
         },
         (loc) => {
-          setLocation({
-            latitude: loc.coords.latitude,
-            longitude: loc.coords.longitude,
-          });
+          if (followUser) {
+            setRegion((prev) => ({
+  latitude: loc.coords.latitude,
+  longitude: loc.coords.longitude,
+  latitudeDelta: prev?.latitudeDelta ?? 0.01,
+  longitudeDelta: prev?.longitudeDelta ?? 0.01,
+}));
+
+          }
         }
       );
     })();
@@ -96,20 +104,13 @@ export default function DeliveryTracking() {
     return () => {
       if (subscriber) subscriber.remove();
     };
-  }, []);
+  }, [followUser]);
 
-  // Recenter Button Handler
+  // Recenter Button
   const handleRecenter = () => {
-    if (location && mapRef.current) {
-      mapRef.current.animateToRegion(
-        {
-          latitude: location.latitude,
-          longitude: location.longitude,
-          latitudeDelta: 0.01,
-          longitudeDelta: 0.01,
-        },
-        1000
-      );
+    if (region && mapRef.current) {
+      setFollowUser(true);
+      mapRef.current.animateToRegion(region, 1000);
     }
   };
 
@@ -130,45 +131,35 @@ export default function DeliveryTracking() {
           </View>
         ) : (
           <MapView
-  ref={mapRef}
-  style={{ flex: 1 }}
-  showsUserLocation={true}
-  region={
-    location
-      ? {
-          latitude: location.latitude,
-          longitude: location.longitude,
-          latitudeDelta: 0.01,
-          longitudeDelta: 0.01,
-        }
-      : {
-          latitude: 37.78825, // Fallback if location is null
-          longitude: -122.4324,
-          latitudeDelta: 0.01,
-          longitudeDelta: 0.01,
-        }
-  }
->
-  {location && (
-    <Marker
-      coordinate={{ latitude: location.latitude, longitude: location.longitude }}
-      title="Your Location"
-      pinColor="blue"
-    />
-  )}
-</MapView>
-
+            ref={mapRef}
+            style={{ flex: 1 }}
+            showsUserLocation={true}
+            region={region || {
+              latitude: 37.78825,
+              longitude: -122.4324,
+              latitudeDelta: 0.01,
+              longitudeDelta: 0.01,
+            }}
+            onRegionChange={() => setFollowUser(false)}
+          >
+            {region && (
+              <Marker
+                coordinate={{ latitude: region.latitude, longitude: region.longitude }}
+                title="Your Location"
+                pinColor="blue"
+              />
+            )}
+          </MapView>
         )}
 
-        {/* Recenter Floating Button */}
+        {/* Recenter Button */}
         <TouchableOpacity style={styles.recenterButton} onPress={handleRecenter}>
           <Ionicons name="locate-outline" size={22} color="#fff" />
         </TouchableOpacity>
       </View>
 
-      {/* Bottom Sheet UI */}
+      {/* Bottom Sheet */}
       <View style={styles.bottomSheet}>
-        {/* ETA & Address */}
         <Text style={styles.etaText}>10 minutes left</Text>
         <Text style={styles.addressText}>Delivery to Jl. Kpg Sutoyo</Text>
 
@@ -197,10 +188,7 @@ export default function DeliveryTracking() {
               <Text style={styles.courierRole}>Personal Courier</Text>
             </View>
           </View>
-          <TouchableOpacity
-            style={styles.callButton}
-            onPress={() => Linking.openURL(`tel:${"+251989932714"}`)}
-          >
+          <TouchableOpacity style={styles.callButton} onPress={() => Linking.openURL(`tel:${"+251989932714"}`)}>
             <Ionicons name="call-outline" size={20} color="#C67C4E" />
           </TouchableOpacity>
         </View>

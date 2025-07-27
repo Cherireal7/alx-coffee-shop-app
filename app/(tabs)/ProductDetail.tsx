@@ -19,7 +19,7 @@ export default function ProductDetail() {
       </View>
 
       {/* Coffee Image */}
-      <Image source={require("../../assets/images/cappuccino.png")} style={styles.productImage} />
+      <Image source={require("../../assets/images/macchiato.jpg")} style={styles.productImage} />
 
 
       {/* Name & Rating */}
