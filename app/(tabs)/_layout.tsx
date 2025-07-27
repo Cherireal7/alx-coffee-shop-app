@@ -38,24 +38,26 @@ export default function TabsLayout() {
         }}
       />
 
-      {/* Favorites Tab */}
+     
+
+      {/* Notifications Tab */}
+      <Tabs.Screen
+        name="ProductDetail"
+        options={{
+          title: "ProductDetail",
+          tabBarIcon: ({ color, size }) => (
+            <Feather name="bell" size={size} color={color} />
+          ),
+        }}
+      />
+
+       {/* Favorites Tab */}
       <Tabs.Screen
         name="favorites"
         options={{
           title: "Favorites",
           tabBarIcon: ({ color, size }) => (
             <Ionicons name="heart-outline" size={size} color={color} />
-          ),
-        }}
-      />
-
-      {/* Notifications Tab */}
-      <Tabs.Screen
-        name="notifications"
-        options={{
-          title: "Notifications",
-          tabBarIcon: ({ color, size }) => (
-            <Feather name="bell" size={size} color={color} />
           ),
         }}
       />
