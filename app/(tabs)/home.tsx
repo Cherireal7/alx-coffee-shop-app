@@ -1,12 +1,22 @@
 import React, { useState }  from "react";
-import { View, Text, StyleSheet, TextInput, Image, ScrollView, TouchableOpacity   } from "react-native";
+import { View, Text, StyleSheet, TextInput, Image, ScrollView, TouchableOpacity, Modal, Pressable   } from "react-native";
 import { SafeAreaProvider, useSafeAreaInsets } from "react-native-safe-area-context";
 import { Ionicons } from "@expo/vector-icons";
+import { coffeeItems } from "../../constants/data";
+import { imageMap } from "../../constants/imageMap";
+type CoffeeItem = {
+  name: string;
+  price: string;
+  image: any; // Use `any` because require() returns a number in React Native.
+};
+
 
 
 export default function HomeScreen() {
   const insets = useSafeAreaInsets(); // Safe area padding
   const [activeCategory, setActiveCategory] = useState("All Coffee");
+ const [selectedItem, setSelectedItem] = useState<CoffeeItem | null>(null);
+
 
 
   return (
@@ -25,10 +35,10 @@ export default function HomeScreen() {
 
         <View style={styles.searchContainerParent}>
           <View style={styles.searchContainer}>
-            <Ionicons name="search" size={20} color="#4B3832" style={styles.searchIcon} />
+            <Ionicons name="search" size={20} color="#FFFFFF" style={styles.searchIcon} />
             <TextInput
               placeholder="Search for coffee..."
-              placeholderTextColor="#4B3832 "
+              placeholderTextColor="#FFFFFF"
               style={styles.searchInput}
             />
           </View>
@@ -70,6 +80,61 @@ export default function HomeScreen() {
       )
     )}
   </ScrollView>
+
+  {/* Coffee Product Cards */}
+<ScrollView style={styles.productList} showsVerticalScrollIndicator={false}>
+  <View style={styles.cardRow}>
+    {coffeeItems.map((coffee, index) => (
+      <TouchableOpacity
+        key={index}
+        style={styles.card}
+        onPress={() => setSelectedItem(coffee)}
+      >
+        <Image source={imageMap[coffee.image]} style={styles.cardImage} />
+        <Text style={styles.cardTitle}>{coffee.name}</Text>
+        <Text style={styles.cardPrice}>{coffee.price}</Text>
+      </TouchableOpacity>
+    ))}
+  </View>
+</ScrollView>
+
+
+ {/* Modal for Order Details */}
+      <Modal
+        visible={!!selectedItem}
+        animationType="slide"
+        transparent={false}
+      >
+        <ScrollView contentContainerStyle={styles.modalContent}>
+          {selectedItem && (
+            <>
+              <Image source={selectedItem.image} style={styles.modalImage} />
+              <Text style={styles.modalTitle}>{selectedItem.name}</Text>
+              <Text style={styles.modalPrice}>{selectedItem.price}</Text>
+
+              <Text style={styles.modalDescription}>
+                A {selectedItem.name} is a delightful coffee beverage made with
+                carefully selected beans and fresh milk. Tap "Buy Now" to order!
+              </Text>
+
+              <TouchableOpacity
+                style={styles.buyButton}
+                onPress={() => setSelectedItem(null)}
+              >
+                <Text style={styles.buyButtonText}>Buy Now</Text>
+              </TouchableOpacity>
+
+              <TouchableOpacity
+                style={styles.closeButton}
+                onPress={() => setSelectedItem(null)}
+              >
+                <Text style={styles.closeButtonText}>Close</Text>
+              </TouchableOpacity>
+            </>
+          )}
+        </ScrollView>
+      </Modal>
+
 </View>
 
         
@@ -77,13 +142,12 @@ export default function HomeScreen() {
       
 
 
-        
-      
-
       
     </SafeAreaProvider>
   );
 }
+
+
 
 const styles = StyleSheet.create({
   container: {
@@ -145,7 +209,7 @@ const styles = StyleSheet.create({
   searchInput: {
     flex: 1,
     fontSize: 16,
-    color: "#333",
+    color: "#FFFFFF",
   },
   banner: {
     bottom: 0,
@@ -180,6 +244,106 @@ activeCategoryText: {
   color: "#fff",
   fontWeight: "bold",
 },
+productList: {
+  marginTop: 20,
+  paddingHorizontal: 20,
+},
+cardRow: {
+  flexDirection: "row",
+  flexWrap: "wrap",
+  justifyContent: "space-between",
+},
+card: {
+  backgroundColor: "#fff",
+  borderRadius: 12,
+  padding: 12,
+  width: "48%", // Two cards per row
+  marginBottom: 16,
+  shadowColor: "#000",
+  shadowOffset: { width: 0, height: 4 },
+  shadowOpacity: 0.1,
+  shadowRadius: 6,
+  elevation: 3,
+  alignItems: "center",
+},
+cardImage: {
+  width: "100%",
+  height: 120,
+  borderRadius: 8,
+  marginBottom: 10,
+  resizeMode: "cover",
+},
+cardTitle: {
+  fontSize: 16,
+  fontWeight: "600",
+  color: "#333",
+  marginBottom: 4,
+},
+cardPrice: {
+  fontSize: 14,
+  fontWeight: "bold",
+  color: "#C67C4E",
+},
+addButton: {
+  marginTop: 8,
+  backgroundColor: "#C67C4E",
+  borderRadius: 20,
+  width: 32,
+  height: 32,
+  justifyContent: "center",
+  alignItems: "center",
+},
+addButtonText: {
+  color: "#fff",
+  fontSize: 20,
+  fontWeight: "bold",
+},
+modalContent: {
+    padding: 20,
+    alignItems: "center",
+  },
+  modalImage: {
+    width: "100%",
+    height: 250,
+    borderRadius: 12,
+    marginBottom: 20,
+  },
+  modalTitle: {
+    fontSize: 22,
+    fontWeight: "bold",
+    marginBottom: 10,
+  },
+  modalPrice: {
+    fontSize: 18,
+    color: "#C67C4E",
+    marginBottom: 20,
+  },
+  modalDescription: {
+    fontSize: 14,
+    textAlign: "center",
+    color: "#555",
+    marginBottom: 20,
+  },
+  buyButton: {
+    backgroundColor: "#C67C4E",
+    paddingVertical: 12,
+    paddingHorizontal: 40,
+    borderRadius: 30,
+    marginBottom: 10,
+  },
+  buyButtonText: {
+    color: "#fff",
+    fontSize: 16,
+    fontWeight: "600",
+  },
+  closeButton: {
+    paddingVertical: 10,
+  },
+  closeButtonText: {
+    fontSize: 16,
+    color: "red",
+  },
+
 
 
 
