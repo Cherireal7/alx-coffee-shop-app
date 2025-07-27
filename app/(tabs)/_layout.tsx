@@ -1,12 +1,12 @@
 import { Tabs } from "expo-router";
-import { Ionicons, Feather, MaterialIcons } from "@expo/vector-icons";
+import { Ionicons, MaterialIcons } from "@expo/vector-icons";
 
 export default function TabsLayout() {
   return (
     <Tabs
       screenOptions={{
         headerShown: false,
-        tabBarActiveTintColor: "#C67C4E", // Coffee theme color
+        tabBarActiveTintColor: "#C67C4E",
         tabBarStyle: {
           backgroundColor: "#FFFF",
           borderTopWidth: 0.5,
@@ -16,7 +16,6 @@ export default function TabsLayout() {
         },
       }}
     >
-      {/* Home Tab */}
       <Tabs.Screen
         name="home"
         options={{
@@ -26,8 +25,6 @@ export default function TabsLayout() {
           ),
         }}
       />
-
-      {/* Orders Tab */}
       <Tabs.Screen
         name="order"
         options={{
@@ -37,21 +34,6 @@ export default function TabsLayout() {
           ),
         }}
       />
-
-     
-
-      {/* Notifications Tab */}
-      <Tabs.Screen
-        name="ProductDetail"
-        options={{
-          title: "ProductDetail",
-          tabBarIcon: ({ color, size }) => (
-            <Feather name="bell" size={size} color={color} />
-          ),
-        }}
-      />
-
-       {/* Favorites Tab */}
       <Tabs.Screen
         name="favorites"
         options={{
